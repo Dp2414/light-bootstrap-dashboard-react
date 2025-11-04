@@ -15,7 +15,7 @@
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 */
-import React from "react";
+import React, { useState, useEffect } from "react";
 import ReactDOM from "react-dom/client";
 
 import { BrowserRouter, Route, Switch, Redirect } from "react-router-dom";
@@ -27,14 +27,57 @@ import "./assets/css/demo.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 
 import AdminLayout from "layouts/Admin.js";
+import Login from "./Login.js";
+import Signup from "./Signup.jsx";
+import Menus from "views/Menus";
+import Notification from "components/Notification/Notification.js";
+
+const ProtectedRoute = ({ component: Component, ...rest }) => {
+  const [isAuthenticated, setIsAuthenticated] = useState(null);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/verify', {
+          credentials: 'include'
+        });
+        setIsAuthenticated(response.ok);
+      } catch (error) {
+        setIsAuthenticated(false);
+      }
+    };
+    checkAuth();
+  }, []);
+
+  if (isAuthenticated === null) {
+    return <div>Loading...</div>;
+  }
+
+  return (
+    <Route
+      {...rest}
+      render={(props) =>
+        isAuthenticated ? (
+          <Component {...props} />
+        ) : (
+          <Redirect to="/login" />
+        )
+      }
+    />
+  );
+};
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
 root.render(
   <BrowserRouter>
     <Switch>
-      <Route path="/admin" render={(props) => <AdminLayout {...props} />} />
-      <Redirect from="/" to="/admin/dashboard" />
+      <ProtectedRoute path="/admin" component={AdminLayout} />
+      <Route path="/login" component={Login} />
+      <Route path="/signup" component={Signup} />{" "}
+      {/* <Route path="/menus" component={Menus} /> */}
+      <Redirect from="/" to="/admin/form" />
     </Switch>
+    <Notification />
   </BrowserRouter>
 );

@@ -15,14 +15,72 @@
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 */
-import React, { Component } from "react";
+import React, { Component, useEffect, useState } from "react";
 import { useLocation, NavLink } from "react-router-dom";
 
 import { Nav } from "react-bootstrap";
 
 import logo from "assets/img/reactlogo.png";
 
-function Sidebar({ color, image, routes }) {
+function Sidebar({image,color }) {
+
+  const [menus, setMenus] = useState([]); 
+  const [authorized, setAuthorized] = useState(false);
+  
+
+
+  const fetchMenus = async () => {
+    try {
+      const menuResponse = await fetch("http://localhost:5000/menus", {
+        credentials: "include"
+      });
+      const menuData = await menuResponse.json();
+      setMenus(menuData);
+    } catch (menuError) {
+      console.error("Error fetching menus:", menuError);
+    }
+  };
+
+  useEffect(() => {
+    async function authenticateAndFetchMenus() {
+      try {
+        const response = await fetch("http://localhost:5000/verify", {
+          method: "GET",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json"
+          }
+        });
+        
+        if (response.ok) {
+          setAuthorized(true);
+          console.log('User is authorized');
+          fetchMenus();
+        } else {
+          setAuthorized(false);
+          console.log('User is not authorized');
+        }
+      } catch (error) {
+        console.error("Error verifying token:", error);
+        setAuthorized(false);
+      }
+    }
+    
+    authenticateAndFetchMenus();
+    
+    // Listen for menu updates
+    const handleMenuUpdate = () => {
+      fetchMenus();
+    };
+    
+    window.addEventListener('menuUpdated', handleMenuUpdate);
+    
+    return () => {
+      window.removeEventListener('menuUpdated', handleMenuUpdate);
+    };
+  }, []);
+
+
   const location = useLocation();
   const activeRoute = (routeName) => {
     return location.pathname.indexOf(routeName) > -1 ? "active" : "";
@@ -36,21 +94,15 @@ function Sidebar({ color, image, routes }) {
         }}
       />
       <div className="sidebar-wrapper">
-        <div className="logo d-flex align-items-center justify-content-start">
-          <a
-            href="https://www.creative-tim.com?ref=lbd-sidebar"
-            className="simple-text logo-mini mx-1"
-          >
-            <div className="logo-img">
-              <img src={require("assets/img/reactlogo.png")} alt="..." />
-            </div>
-          </a>
-          <a className="simple-text" href="http://www.creative-tim.com">
-            Creative Tim
-          </a>
+        <div className="logo d-flex align-items-center justify-content-center">
+       
+          <h5 className="simple-text text-center" >
+  Dp
+          </h5>
         </div>
         <Nav>
-          {routes.map((prop, key) => {
+          {menus.map((prop, key) => {
+            
             if (!prop.redirect)
               return (
                 <li
@@ -66,6 +118,7 @@ function Sidebar({ color, image, routes }) {
                     className="nav-link"
                     activeClassName="active"
                   >
+                    {/* <i className={prop.icon} /> */}
                     <i className={prop.icon} />
                     <p>{prop.name}</p>
                   </NavLink>

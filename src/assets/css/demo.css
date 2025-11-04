@@ -221,7 +221,7 @@
 }
 
 .fixed-plugin .adjustments-line p {
-  float: left;
+  /* float: left; */
   display: inline-block;
   margin-bottom: 0;
   font-size: 1em;
@@ -815,3 +815,60 @@
   display: block;
   width: 100%;
 }
+
+@media (max-width: 991px) {
+  .typography-line {
+    padding-left: 0;
+    text-align: center;
+  }
+  .typography-line span {
+    position: relative;
+    margin-bottom: 10px;
+    display: inline-block;
+    width: auto;
+  }
+}
+/* 
+.brown{
+  background-color: white;
+  color:#BF9675;
+ border-color:#7b4b2a !important; 
+}
+
+.MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline {
+  border-color: #7b4b2a !important;
+}
+
+.MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+  border-color: #7b4b2a !important;
+}
+
+.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: #7b4b2a !important;
+}
+
+.card1{
+  background-color: #4f7ed6;
+  display: flex;
+  justify-content:space-between;
+  align-items: center;
+  justify-items: center;
+  height: 50px;
+  border-radius: 8px 8px 0px 0px;
+  padding: 0px 20px 0px 20px;
+}
+
+.card{
+   width: 30%;
+  border: 1px solid rgb(219, 207, 207);
+   border-radius: 8px 8px 0px 0px;
+   height: 450px;
+}
+.inputs{
+  border: 1px solid rgb(217, 210, 210);
+  padding: 5px;
+  width: 50%;
+  margin-left: 8px;
+  border-radius: 5px;
+  font-size: larger;
+} */
